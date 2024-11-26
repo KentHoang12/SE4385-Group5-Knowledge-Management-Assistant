@@ -1,4 +1,5 @@
-<div class="chat-container">
+<p>help</p>
+<div class="search-container">
     <div class="chat-box" *ngFor="let response of chatResponses">
       <div [ngClass]="response.from">{{ response.message }}</div>
     </div>
@@ -8,7 +9,7 @@
         [(ngModel)]="userInput"
         placeholder="Type a message"
       />
-      <button (click)="sendMessage()">Send</button>
+      <button (click)="getResponse()">Send</button>
     </div>
   </div>
   

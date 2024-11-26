@@ -1,23 +1,28 @@
 import { Component } from '@angular/core';
 import { LmstudioService } from '../services/lmstudio.service';
 import { DuckduckgoService } from '../services/duckduckgo.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
-  selector: 'app-chat',
-  templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css'],
+  selector: 'app-search-page',
+  standalone: true,
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  templateUrl: './search-page.component.html',
+  styleUrl: './search-page.component.css'
 })
-export class ChatComponent {
+export class SearchPageComponent {
   userInput = '';
   chatResponses: Array<{ from: string; message: string }> = [];
 
   constructor(private lmstudioService: LmstudioService, private duckduckgoService: DuckduckgoService) {}
-
+  
   getResponse() {
-    console.log('hello');
     if (this.userInput.trim()) {
       const input = this.userInput;
       this.chatResponses.push({ from: 'user', message: input });
+      console.log(input);
       this.userInput = '';
 
       // Step 1: Process user input using LMStudio
@@ -76,4 +81,6 @@ export class ChatComponent {
     }
     return 'No search results found.';
   }
+
 }
+
