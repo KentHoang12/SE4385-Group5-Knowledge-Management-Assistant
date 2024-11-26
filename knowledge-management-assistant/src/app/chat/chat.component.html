@@ -1,9 +1,4 @@
-<h1 class="text-3xl font-bold underline text-indigo-600">
-  Welcome to Chat App!
-</h1>
-
-<app-chat>
-  <div class="chat-container">
+<div class="chat-container">
     <div class="chat-box" *ngFor="let response of chatResponses">
       <div [ngClass]="response.from">{{ response.message }}</div>
     </div>
@@ -16,4 +11,4 @@
       <button (click)="sendMessage()">Send</button>
     </div>
   </div>
-</app-chat>
+  
