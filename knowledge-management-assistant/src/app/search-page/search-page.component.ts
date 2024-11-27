@@ -17,18 +17,31 @@ export class SearchPageComponent {
   chatResponses: Array<{ from: string; message: string }> = [];
 
   constructor(private lmstudioService: LmstudioService, private duckduckgoService: DuckduckgoService) {}
+
+  formatMessage(message: string): string {
+    // Replace **bold** with <strong> tags
+    message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+    // Bold numbered list items, indent number
+    message = message.replace(/^(\d+\.\s)(.*)/gm, '<p class="numbered-item"><span class="number">$1</span><span class="text">$2</span></p>');
+  
+    // Convert list items (with asterisks) into block elements
+    message = message.replace(/^\* (.*)/gm, '<p class="list-item">• $1</p>'); // Each list item on a new line
+  
+    return message;
+  }
   
   getResponse() {
     if (this.userInput.trim()) {
       const input = this.userInput;
       this.chatResponses.push({ from: 'user', message: input });
       this.userInput = '';
-  
+
       this.lmstudioService.getResponse(input).subscribe({
         next: (response: { choices: { message: { content: string } }[] }) => {
-          // Extract response from LLM
+          // Extract and format the response from LLM
           if (response?.choices?.length > 0 && response.choices[0].message?.content) {
-            let aiResponse = response.choices[0].message.content.trim();
+            let aiResponse = this.formatMessage(response.choices[0].message.content); // Format message
             this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
           } else {
             this.chatResponses.push({
@@ -36,36 +49,41 @@ export class SearchPageComponent {
               message: 'No valid response received from the LLM.',
             });
           }
-  
-          //Search the web
+
+          // Search the web
           this.duckduckgoService.searchWeb(input).subscribe({
             next: (searchResults) => {
-              const searchSummary = this.processSearchResults(searchResults);
-  
-              //Process web results with LMStudio
-              this.lmstudioService.getResponse(searchSummary).subscribe({
-                next: (processedResults) => {
-                  if (processedResults?.choices?.length > 0 && processedResults.choices[0].message?.content) {
-                    const finalResponse = processedResults.choices[0].message.content.trim();
-                    this.chatResponses.push({
-                      from: 'lmstudio',
-                      message: `Processed Web Results: ${finalResponse}`,
-                    });
-                  } else {
-                    this.chatResponses.push({
-                      from: 'lmstudio',
-                      message: 'No valid processed web results received from the LLM.',
-                    });
-                  }
-                },
-                error: (err) => {
-                  console.error('Error processing web results:', err);
+              try {
+                if (searchResults && searchResults.RelatedTopics) {
+                  const topLinks = searchResults.RelatedTopics.slice(0, 5).map(
+                    (topic: any) => topic.FirstURL || null
+                  );
+
+                  const hyperlinkList = topLinks
+                    .filter((url: any) => url) 
+                    .map((url: any) => `<a href="${url}" target="_blank">${url}</a>`)
+                    .join('<br>');
+
+                  // Format hyperlinks dynamically
+                  const formattedLinks = this.formatMessage(`Top 5 Links:<br>${hyperlinkList}`);
+
                   this.chatResponses.push({
                     from: 'lmstudio',
-                    message: 'Error processing web results.',
+                    message: formattedLinks,
                   });
-                },
-              });
+                } else {
+                  this.chatResponses.push({
+                    from: 'lmstudio',
+                    message: 'No search results found.',
+                  });
+                }
+              } catch (error) {
+                console.error('Error while extracting search results:', error);
+                this.chatResponses.push({
+                  from: 'lmstudio',
+                  message: 'Error while extracting search results.',
+                });
+              }
             },
             error: (err) => {
               console.error('Error fetching web results:', err);
@@ -88,14 +106,14 @@ export class SearchPageComponent {
   }
   
 
-  processSearchResults(searchResults: any): string {
+  processSearchResults(searchResults: any): string[] {
     if (searchResults && searchResults.RelatedTopics) {
+      // Map to an array of topic text, filtering out empty strings
       return searchResults.RelatedTopics.map(
         (topic: any) => topic.Text || ''
-      ).join('\n');
+      ).filter((text: string) => text.trim() !== ''); // Remove empty results
     }
-    return 'No search results found.';
+    return []; // Return an empty array if no results
   }
-
 }
 

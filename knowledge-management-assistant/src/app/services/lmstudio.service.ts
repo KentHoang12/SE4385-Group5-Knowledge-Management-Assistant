@@ -19,7 +19,7 @@ export class LmstudioService {
           content: prompt 
         }
       ],
-      max_tokens: 100,
+      max_tokens: 400,
       temperature: 0.7,
     };
   
