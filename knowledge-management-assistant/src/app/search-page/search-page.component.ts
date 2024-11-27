@@ -22,30 +22,44 @@ export class SearchPageComponent {
     if (this.userInput.trim()) {
       const input = this.userInput;
       this.chatResponses.push({ from: 'user', message: input });
-      console.log(input);
       this.userInput = '';
-
-      // Step 1: Process user input using LMStudio
+  
       this.lmstudioService.getResponse(input).subscribe({
-        next: (response: { choices: { text: string; }[]; }) => {
-          const aiResponse = response.choices[0].text.trim(); // Extract response
-          this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
-
-          // Step 2: Search the web
+        next: (response: { choices: { message: { content: string } }[] }) => {
+          // Extract response from LLM
+          if (response?.choices?.length > 0 && response.choices[0].message?.content) {
+            let aiResponse = response.choices[0].message.content.trim();
+            this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
+          } else {
+            this.chatResponses.push({
+              from: 'lmstudio',
+              message: 'No valid response received from the LLM.',
+            });
+          }
+  
+          //Search the web
           this.duckduckgoService.searchWeb(input).subscribe({
             next: (searchResults) => {
               const searchSummary = this.processSearchResults(searchResults);
-
-              // Step 3: Process web results with LMStudio
+  
+              //Process web results with LMStudio
               this.lmstudioService.getResponse(searchSummary).subscribe({
                 next: (processedResults) => {
-                  const finalResponse = processedResults.choices[0].text.trim();
-                  this.chatResponses.push({
-                    from: 'lmstudio',
-                    message: `Processed Web Results: ${finalResponse}`,
-                  });
+                  if (processedResults?.choices?.length > 0 && processedResults.choices[0].message?.content) {
+                    const finalResponse = processedResults.choices[0].message.content.trim();
+                    this.chatResponses.push({
+                      from: 'lmstudio',
+                      message: `Processed Web Results: ${finalResponse}`,
+                    });
+                  } else {
+                    this.chatResponses.push({
+                      from: 'lmstudio',
+                      message: 'No valid processed web results received from the LLM.',
+                    });
+                  }
                 },
                 error: (err) => {
+                  console.error('Error processing web results:', err);
                   this.chatResponses.push({
                     from: 'lmstudio',
                     message: 'Error processing web results.',
@@ -54,6 +68,7 @@ export class SearchPageComponent {
               });
             },
             error: (err) => {
+              console.error('Error fetching web results:', err);
               this.chatResponses.push({
                 from: 'lmstudio',
                 message: 'Error fetching web results.',
@@ -62,6 +77,7 @@ export class SearchPageComponent {
           });
         },
         error: (err) => {
+          console.error('Error processing user input:', err);
           this.chatResponses.push({
             from: 'lmstudio',
             message: 'Error processing user input.',
@@ -70,10 +86,9 @@ export class SearchPageComponent {
       });
     }
   }
+  
 
   processSearchResults(searchResults: any): string {
-    // Simplify or summarize search results for processing
-    // Example with DuckDuckGo JSON structure:
     if (searchResults && searchResults.RelatedTopics) {
       return searchResults.RelatedTopics.map(
         (topic: any) => topic.Text || ''
