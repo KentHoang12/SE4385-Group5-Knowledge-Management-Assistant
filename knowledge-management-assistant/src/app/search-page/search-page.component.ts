@@ -31,6 +31,12 @@ export class SearchPageComponent {
     return message;
   }
   
+  ngOnInit() {
+    const savedHistory = localStorage.getItem('chatHistory');
+    if(savedHistory) {
+      this.chatResponses = JSON.parse(savedHistory);
+    }
+  }
   getResponse() {
     if (this.userInput.trim()) {
       const input = this.userInput;
@@ -43,6 +49,7 @@ export class SearchPageComponent {
           if (response?.choices?.length > 0 && response.choices[0].message?.content) {
             let aiResponse = this.formatMessage(response.choices[0].message.content); // Format message
             this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
+            localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
           } else {
             this.chatResponses.push({
               from: 'lmstudio',
@@ -102,6 +109,7 @@ export class SearchPageComponent {
           });
         },
       });
+      localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
     }
   }
   

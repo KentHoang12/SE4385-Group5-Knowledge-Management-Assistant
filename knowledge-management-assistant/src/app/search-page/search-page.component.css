@@ -1,0 +1,78 @@
+/* Main container for the entire search component */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    padding: 10px;
+    box-sizing: border-box; /* Ensure padding is included in total height */
+    justify-content: flex-end; /* Push content to the bottom */
+  }
+  
+  /* Container for chat messages */
+  .chat-messages {
+    flex-grow: 1; /* Allow this section to expand and take up available space */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+    text-align: left; /* Align all chat responses to the left */
+    margin-bottom: 10px; /* Add space between messages and input box */
+  }
+  
+  /* Individual message styling */
+  .chat-message {
+    display: inline-block;
+    max-width: 80%;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    word-wrap: break-word;
+    text-align: left; /* Ensure the message content is left-aligned */
+  }
+  
+  /* Styling for user message */
+  .user-message {
+    background-color: #d1f0f1;
+    text-align: left; /* User messages are left aligned */
+  }
+  
+  /* Styling for system message */
+  .system-message {
+    background-color: #f1e0d1;
+    text-align: left; /* System messages are left aligned */
+  }
+  
+  /* Input box styling */
+  .input-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #fff;
+    width: 100%;
+    border-top: 1px solid #ccc;
+  }
+  
+  /* Input field styling */
+  .input-box input {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Button styling */
+  .input-box button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .input-box button:hover {
+    background-color: #45a049;
+  }
+  

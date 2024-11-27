@@ -10,7 +10,7 @@ export class DuckduckgoService {
   constructor(private http: HttpClient) { }
 
   searchWeb(query: string): Observable<any> {
-    const apiKey = 'b64eb398c53b0b28b184f4f6c73a5667f80f651c4235fb14af45be07abe5abd5'; // Replace with your actual SerpAPI key
+    const apiKey = 'b64eb398c53b0b28b184f4f6c73a5667f80f651c4235fb14af45be07abe5abd5';
     const searchUrl = `https://serpapi.com/search`; // Base URL for SerpAPI
     
     // Set query parameters
