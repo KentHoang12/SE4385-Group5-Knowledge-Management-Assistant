@@ -6,7 +6,7 @@ import { NgModule } from '@angular/core';
 
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', component: LoginComponent },
+  { path: 'login', pathMatch: 'full', component: LoginComponent },
   { path: 'home', component: SearchPageComponent },
 ];
 
@@ -14,3 +14,4 @@ export const routes: Routes = [
 //   imports: [RouterModule.forRoot(routes)],
 //   exports: [RouterModule]
 // })
+// export class AppRoutingModule {}

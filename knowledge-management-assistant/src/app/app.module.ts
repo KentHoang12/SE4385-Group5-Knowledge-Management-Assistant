@@ -12,7 +12,6 @@ import { SearchPageComponent } from './search-page/search-page.component';
     AppComponent, // Root component
     LoginComponent,
     SearchPageComponent,
-    
   ],
   imports: [
     BrowserModule,
