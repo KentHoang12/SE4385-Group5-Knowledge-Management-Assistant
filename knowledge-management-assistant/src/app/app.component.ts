@@ -3,13 +3,13 @@ import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { SearchPageComponent } from './search-page/search-page.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
-import { ApitestComponent } from './apitest/apitest.component';
+import { DerektestareaComponent } from './derektestarea/derektestarea.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SearchPageComponent, LoginComponent, ApitestComponent, RouterModule, HttpClientModule, RouterLink,],
+  imports: [RouterOutlet, SearchPageComponent, LoginComponent, DerektestareaComponent, RouterModule, HttpClientModule, RouterLink,],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
