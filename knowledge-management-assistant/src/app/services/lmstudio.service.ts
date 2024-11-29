@@ -12,13 +12,19 @@ export class LmstudioService {
 
   getResponse(prompt: string): Observable<any> {
     const body = {
-      model: 'llama-3.2-1b-instruct',
-      prompt: prompt,      // Text prompt sent to the model
-      max_tokens: 100,  // Max tokens for the response (adjust as needed)
-      temperature: 0.7   // Response randomness (adjust as needed)
+      model: "llama-3.2-1b-instruct",
+      messages: [
+        {
+          role: "user",
+          content: prompt 
+        }
+      ],
+      max_tokens: 400,
+      temperature: 0.7,
     };
-
+  
     return this.http.post(this.apiUrl, body);
   }
+  
 
 }
