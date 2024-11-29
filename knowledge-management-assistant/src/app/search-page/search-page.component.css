@@ -1,22 +1,27 @@
-/* Main container for the entire search component */
 .search-container {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
     padding: 10px;
-    box-sizing: border-box; /* Ensure padding is included in total height */
-    justify-content: flex-end; /* Push content to the bottom */
+    box-sizing: border-box;
+    justify-content: flex-end;
   }
   
-  /* Container for chat messages */
+  .chat-container {
+    flex-grow: 1;
+    overflow-y: auto; 
+    padding: 10px;
+    border: 1px solid #ccc; 
+    height: 0; 
+    min-height: 0; 
+  }
   .chat-messages {
-    flex-grow: 1; /* Allow this section to expand and take up available space */
-    overflow-y: auto; /* Enable scrolling if content overflows */
-    text-align: left; /* Align all chat responses to the left */
-    margin-bottom: 10px; /* Add space between messages and input box */
+    flex-grow: 1;
+    overflow-y: auto;
+    text-align: left;
+    margin-bottom: 10px; 
   }
   
-  /* Individual message styling */
   .chat-message {
     display: inline-block;
     max-width: 80%;
@@ -25,22 +30,19 @@
     border-radius: 10px;
     background-color: #f0f0f0;
     word-wrap: break-word;
-    text-align: left; /* Ensure the message content is left-aligned */
+    text-align: left; 
   }
   
-  /* Styling for user message */
   .user-message {
     background-color: #d1f0f1;
-    text-align: left; /* User messages are left aligned */
+    text-align: left; 
   }
   
-  /* Styling for system message */
   .system-message {
     background-color: #f1e0d1;
-    text-align: left; /* System messages are left aligned */
+    text-align: left; 
   }
   
-  /* Input box styling */
   .input-box {
     display: flex;
     justify-content: center;
@@ -52,7 +54,6 @@
     border-top: 1px solid #ccc;
   }
   
-  /* Input field styling */
   .input-box input {
     width: 80%;
     padding: 10px;
@@ -61,7 +62,6 @@
     border-radius: 5px;
   }
   
-  /* Button styling */
   .input-box button {
     padding: 10px 20px;
     font-size: 16px;

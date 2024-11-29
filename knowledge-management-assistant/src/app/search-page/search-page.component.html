@@ -1,10 +1,12 @@
 <div class="search-container">
-  <div *ngFor="let response of chatResponses">
-    <div
-      class="chat-message"
-      [ngClass]="{ 'user-message': response.from === 'user', 'system-message': response.from !== 'user' }"
-    >
-      <div [innerHTML]="response.message"></div>
+  <div class="chat-container">
+    <div *ngFor="let response of chatResponses">
+      <div
+        class="chat-message"
+        [ngClass]="{ 'user-message': response.from === 'user', 'system-message': response.from !== 'user' }"
+      >
+        <div [innerHTML]="response.message"></div>
+      </div>
     </div>
   </div>
 
