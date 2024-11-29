@@ -21,13 +21,10 @@ export class LoginComponent {
   constructor(private router: Router) {}
 
   onSubmit() {
-    // if username and password is "admin", pass 
-    console.log('Username:', this.username);
-    console.log('Password:', this.password);
+    console.log('test');
     // Add authentication logic and navigate to the next page upon successful login
-
     if (this.username === 'admin' && this.password === 'admin') {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     } else {
       this.errorMessage = 'Invalid username or password.';
     }

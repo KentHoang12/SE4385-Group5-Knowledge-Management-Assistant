@@ -6,8 +6,9 @@ import { NgModule } from '@angular/core';
 
 
 export const routes: Routes = [
-  { path: 'login', pathMatch: 'full', component: LoginComponent },
+  { path: '', pathMatch: 'full', component: LoginComponent },
   { path: 'home', component: SearchPageComponent },
+  { path: '**', redirectTo: '' }
 ];
 
 // @NgModule({
