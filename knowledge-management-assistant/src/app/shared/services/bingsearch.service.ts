@@ -37,10 +37,5 @@ export class BingsearchService {
       console.error('Error fetching data from Bing Search API:', error);
       throw error;
     }
-    
-    
-    
-    
-  
   }
 }

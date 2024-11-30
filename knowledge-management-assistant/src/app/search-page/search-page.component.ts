@@ -6,20 +6,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import PocketBase from 'pocketbase';
 import { BingsearchService } from '../shared/services/bingsearch.service';
-import { WebsearchComponent } from '../websearch/websearch.component';
 
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, WebsearchComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule],
   templateUrl: './search-page.component.html',
   styleUrl: './search-page.component.css'
 })
 export class SearchPageComponent {
   userInput = '';
   chatResponses: Array<{ from: string; message: string }> = [];
+  results = [];
 
-  constructor(private lmstudioService: LmstudioService) {}
+  constructor(private lmstudioService: LmstudioService, private bingSearchService: BingsearchService) {}
 
   formatMessage(message: string): string {
     // Replace **bold** with <strong> tags
@@ -40,11 +40,10 @@ export class SearchPageComponent {
       this.chatResponses = JSON.parse(savedHistory);
     }
   }
-  getResponse() {
+  async getResponse() {
     if (this.userInput.trim()) {
       const input = this.userInput;
       this.chatResponses.push({ from: 'user', message: input });
-      this.userInput = '';
 
       this.lmstudioService.getResponse(input).subscribe({
         next: (response: { choices: { message: { content: string } }[] }) => {
@@ -69,7 +68,9 @@ export class SearchPageComponent {
         },
       });
 
-      
+      const apiResults = await this.bingSearchService.searchBing(this.userInput);
+
+      this.results = apiResults.webPages?.value.map((item: any) => item.url) || [];
 
       localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
     }
