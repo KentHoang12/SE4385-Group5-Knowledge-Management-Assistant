@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
-import { LmstudioService } from '../services/lmstudio.service';
-import { DuckduckgoService } from '../services/duckduckgo.service';
+import { LmstudioService } from '../shared/services/lmstudio.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import PocketBase from 'pocketbase';
+import { BingsearchService } from '../shared/services/bingsearch.service';
+import { WebsearchComponent } from '../websearch/websearch.component';
 
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, WebsearchComponent],
   templateUrl: './search-page.component.html',
   styleUrl: './search-page.component.css'
 })
@@ -17,7 +19,7 @@ export class SearchPageComponent {
   userInput = '';
   chatResponses: Array<{ from: string; message: string }> = [];
 
-  constructor(private lmstudioService: LmstudioService, private duckduckgoService: DuckduckgoService) {}
+  constructor(private lmstudioService: LmstudioService) {}
 
   formatMessage(message: string): string {
     // Replace **bold** with <strong> tags
@@ -57,50 +59,6 @@ export class SearchPageComponent {
               message: 'No valid response received from the LLM.',
             });
           }
-
-          // Search the web
-          this.duckduckgoService.searchWeb(input).subscribe({
-            next: (searchResults) => {
-              try {
-                if (searchResults && searchResults.RelatedTopics) {
-                  const topLinks = searchResults.RelatedTopics.slice(0, 5).map(
-                    (topic: any) => topic.FirstURL || null
-                  );
-
-                  const hyperlinkList = topLinks
-                    .filter((url: any) => url) 
-                    .map((url: any) => `<a href="${url}" target="_blank">${url}</a>`)
-                    .join('<br>');
-
-                  // Format hyperlinks dynamically
-                  const formattedLinks = this.formatMessage(`Top 5 Links:<br>${hyperlinkList}`);
-
-                  this.chatResponses.push({
-                    from: 'lmstudio',
-                    message: formattedLinks,
-                  });
-                } else {
-                  this.chatResponses.push({
-                    from: 'lmstudio',
-                    message: 'No search results found.',
-                  });
-                }
-              } catch (error) {
-                console.error('Error while extracting search results:', error);
-                this.chatResponses.push({
-                  from: 'lmstudio',
-                  message: 'Error while extracting search results.',
-                });
-              }
-            },
-            error: (err) => {
-              console.error('Error fetching web results:', err);
-              this.chatResponses.push({
-                from: 'lmstudio',
-                message: 'Error fetching web results.',
-              });
-            },
-          });
         },
         error: (err) => {
           console.error('Error processing user input:', err);
@@ -110,6 +68,9 @@ export class SearchPageComponent {
           });
         },
       });
+
+      
+
       localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
     }
   }
