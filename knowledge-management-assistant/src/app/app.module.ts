@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
+import { LoginpbComponent } from './loginpb/loginpb.component';
 import { SearchPageComponent } from './search-page/search-page.component';
 
 @NgModule({
   declarations: [
     AppComponent, // Root component
-    LoginComponent,
+    LoginpbComponent,
     SearchPageComponent,
   ],
   imports: [

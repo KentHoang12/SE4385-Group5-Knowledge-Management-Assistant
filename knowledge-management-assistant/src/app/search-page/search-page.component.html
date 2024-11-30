@@ -19,9 +19,9 @@
     />
     <button (click)="getResponse()">Send</button>
   </div>
-  <div>
+  <div *ngIf="results && results.length">
     <h2>Search Results for "{{ userInput }}"</h2>
-    <div *ngIf="results && results.length">
+    <div>
       <ul>
         <!-- Loop through the results array and display each item as a hyperlink -->
         <li *ngFor="let result of results">

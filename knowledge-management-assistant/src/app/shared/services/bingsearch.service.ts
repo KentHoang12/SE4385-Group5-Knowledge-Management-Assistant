@@ -29,9 +29,6 @@ export class BingsearchService {
     try {
       const response = await this.httpclient.get(this.apiurl, { headers, params }).toPromise();
 
-      let collection = pb.collection('queries');
-      collection.create({ query: query, response: response });
-
       return response;
     } catch (error) {
       console.error('Error fetching data from Bing Search API:', error);

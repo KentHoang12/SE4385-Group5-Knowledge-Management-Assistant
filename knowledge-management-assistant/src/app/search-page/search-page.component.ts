@@ -6,6 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import PocketBase from 'pocketbase';
 import { BingsearchService } from '../shared/services/bingsearch.service';
+import { environment } from '../../environments/environment.development';
+import { consumerPollProducersForChange } from '@angular/core/primitives/signals';
 
 @Component({
   selector: 'app-search-page',
@@ -39,8 +41,13 @@ export class SearchPageComponent {
     if(savedHistory) {
       this.chatResponses = JSON.parse(savedHistory);
     }
+    
   }
   async getResponse() {
+    const pb = new PocketBase(environment.baseUrl);
+
+    if(!pb.authStore.isValid){return;}
+    
     if (this.userInput.trim()) {
       const input = this.userInput;
       this.chatResponses.push({ from: 'user', message: input });
@@ -73,6 +80,10 @@ export class SearchPageComponent {
       this.results = apiResults.webPages?.value.map((item: any) => item.url) || [];
 
       localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
+
+      let collection = pb.collection('queries');
+      const r = collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: this.chatResponses[this.chatResponses.length - 1].message });
+
     }
   }
   

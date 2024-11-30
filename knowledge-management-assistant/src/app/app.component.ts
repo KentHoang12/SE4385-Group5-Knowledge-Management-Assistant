@@ -6,12 +6,13 @@ import { LoginpbComponent } from './loginpb/loginpb.component';
 import { AuthService } from './shared/services/auth.service';
 import { Subscription } from 'rxjs';
 import { UserModel } from './interfaces/user-model';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SearchPageComponent, RouterModule, HttpClientModule, RouterLink, LoginpbComponent],
+  imports: [RouterOutlet, SearchPageComponent, RouterModule, HttpClientModule, RouterLink, LoginpbComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
