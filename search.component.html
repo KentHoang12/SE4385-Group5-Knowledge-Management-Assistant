@@ -1,0 +1,25 @@
+<div class="container">
+  <h1>DuckDuckGo Search</h1>
+
+  <input
+    type="text"
+    [(ngModel)]="query"
+    placeholder="Enter your search query"
+    class="form-control"
+  />
+  <button (click)="performSearch()" class="btn btn-primary mt-2">
+    Search
+  </button>
+
+  <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+
+  <div *ngIf="results.length > 0" class="mt-3">
+    <h2>Search Results</h2>
+    <ul class="list-group">
+      <li *ngFor="let result of results" class="list-group-item">
+        <h3>{{ result.title }}</h3>
+        <a [href]="result.link" target="_blank">{{ result.link }}</a>
+      </li>
+    </ul>
+  </div>
+</div>
