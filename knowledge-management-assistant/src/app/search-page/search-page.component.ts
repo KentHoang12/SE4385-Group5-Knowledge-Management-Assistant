@@ -35,7 +35,7 @@ export class SearchPageComponent {
 
   async ngOnInit() {
     const pb = new PocketBase(environment.baseUrl);
-    const pbhist = await pb.collection('queries').getFullList({ user: pb.authStore.record?.id });
+    const pbhist = await pb.collection('queries').getFullList({ user: pb.authStore.record?.id, sort: "created" });
     this.chatResponses =  pbhist.map(this.addtohist).flat();
     
   }
