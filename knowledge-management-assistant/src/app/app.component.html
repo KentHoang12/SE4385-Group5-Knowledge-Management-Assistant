@@ -1,5 +1,11 @@
- <nav>
-  <a routerLink="/logout">logout</a>
-  <a routerLink="/home">search</a>
- </nav>
+<nav class="top-padding">
+   <div class="nav-wrapper">
+     <a *ngIf= "isLoggedIn" routerLink="/search">search</a>
+     <a *ngIf= "!isLoggedIn" routerLink="/">search</a>
+     <div class="right-align">
+       <a routerLink="/account">account</a>
+       <a routerLink="/logout">logout</a>
+     </div>
+   </div>
+</nav>
 <router-outlet></router-outlet>

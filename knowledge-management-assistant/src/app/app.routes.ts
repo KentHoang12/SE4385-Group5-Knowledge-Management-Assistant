@@ -7,7 +7,7 @@ import { LogoutComponent } from './logout/logout.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', component: LoginpbComponent },
-  { path: 'home', component: SearchPageComponent },
+  { path: 'search', component: SearchPageComponent },
   { path: 'logout', component: LogoutComponent },
 ];
 

@@ -1,10 +1,21 @@
+.top-padding {
+    padding-top: 10px; /* Added padding for the top of the screen */
+}
+
 nav a {
-    margin: 0 15px;
+    margin: 10 20px;
     text-decoration: none;
-    color: blue;
-  }
-  
-  nav a:hover {
+    color: gray;
+    border-radius: 5px; /* Added to make buttons rounded */
+    padding: 8px 25px; /* Added padding for better appearance */
+    background-color: rgb(222, 222, 222); /* Added background color */
+}
+
+nav a:hover {
     text-decoration: underline;
-  }
-  
+    background-color: rgb(217, 217, 217); /* Added hover background color */
+}
+
+.right-align {
+    float: right; /* Aligns the account and logout buttons to the right */
+}

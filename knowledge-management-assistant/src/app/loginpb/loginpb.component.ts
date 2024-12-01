@@ -25,7 +25,7 @@ export class LoginpbComponent {
     this.auth.login(this.username, this.password)
     .then((res:boolean) => {  
       if(res){
-        this.router.navigateByUrl('/home')
+        this.router.navigateByUrl('/search')
       }  
     }, (res:null) => this.errorMessage = true);
   } 
