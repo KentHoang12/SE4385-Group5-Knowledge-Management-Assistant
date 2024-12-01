@@ -25,6 +25,4 @@ export class LmstudioService {
   
     return this.http.post(this.apiUrl, body);
   }
-  
-
 }

@@ -2,17 +2,17 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { SearchPageComponent } from './search-page/search-page.component';
 import { HttpClientModule } from '@angular/common/http';
-import { LoginComponent } from './login/login.component';
 import { LoginpbComponent } from './loginpb/loginpb.component';
 import { AuthService } from './shared/services/auth.service';
 import { Subscription } from 'rxjs';
 import { UserModel } from './interfaces/user-model';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SearchPageComponent, LoginComponent, RouterModule, HttpClientModule, RouterLink, LoginpbComponent],
+  imports: [RouterOutlet, SearchPageComponent, RouterModule, HttpClientModule, RouterLink, LoginpbComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

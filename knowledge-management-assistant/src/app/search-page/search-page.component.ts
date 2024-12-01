@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { LmstudioService } from '../services/lmstudio.service';
-import { DuckduckgoService } from '../services/duckduckgo.service';
+import { LmstudioService } from '../shared/services/lmstudio.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import PocketBase from 'pocketbase';
+import { BingsearchService } from '../shared/services/bingsearch.service';
+import { environment } from '../../environments/environment.development';
 
 @Component({
   selector: 'app-search-page',
@@ -16,91 +18,54 @@ import { RouterModule } from '@angular/router';
 export class SearchPageComponent {
   userInput = '';
   chatResponses: Array<{ from: string; message: string }> = [];
+  results = [];
 
-  constructor(private lmstudioService: LmstudioService, private duckduckgoService: DuckduckgoService) {}
+  constructor(private lmstudioService: LmstudioService, private bingSearchService: BingsearchService) {}
 
   formatMessage(message: string): string {
-    // Replace **bold** with <strong> tags
     message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-    // Bold numbered list items, indent number
     message = message.replace(/^(\d+\.\s)(.*)/gm, '<p class="numbered-item"><span class="number">$1</span><span class="text">$2</span></p>');
-  
-    // Convert list items (with asterisks) into block elements
-    message = message.replace(/^\* (.*)/gm, '<p class="list-item">• $1</p>'); // Each list item on a new line
-  
+    message = message.replace(/^\* (.*)/gm, '<p class="list-item">• $1</p>');
     return message;
   }
   
-  ngOnInit() {
-    const savedHistory = localStorage.getItem('chatHistory');
-    if(savedHistory) {
-      this.chatResponses = JSON.parse(savedHistory);
-    }
+  addtohist(array: any) {
+    return [{ from: 'user', message: array["query"] }, { from: "lmstudio", message:array["llmresponse"] }];
   }
-  getResponse() {
+
+  async ngOnInit() {
+    const pb = new PocketBase(environment.baseUrl);
+    const pbhist = await pb.collection('queries').getFullList({ user: pb.authStore.record?.id });
+    this.chatResponses =  pbhist.map(this.addtohist).flat();
+    
+  }
+  async getResponse() {
+    const pb = new PocketBase(environment.baseUrl);
+
+    if(!pb.authStore.isValid){return;}
+    
     if (this.userInput.trim()) {
-      const input = this.userInput;
+      let input = this.userInput;
+      const collection = pb.collection('queries');
       this.chatResponses.push({ from: 'user', message: input });
-      this.userInput = '';
+
+      const apiResults = await this.bingSearchService.searchBing(this.userInput);
+
+      this.results = apiResults.webPages?.value.map((item: any) => item.url) || [];
 
       this.lmstudioService.getResponse(input).subscribe({
         next: (response: { choices: { message: { content: string } }[] }) => {
-          // Extract and format the response from LLM
           if (response?.choices?.length > 0 && response.choices[0].message?.content) {
-            let aiResponse = this.formatMessage(response.choices[0].message.content); // Format message
+            let aiResponse = this.formatMessage(response.choices[0].message.content);
             this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
-            localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
+            collection.create({ query: input, response: aiResponse, user: pb.authStore.record?.id, llmresponse: aiResponse });
           } else {
             this.chatResponses.push({
               from: 'lmstudio',
               message: 'No valid response received from the LLM.',
             });
           }
-
-          // Search the web
-          this.duckduckgoService.searchWeb(input).subscribe({
-            next: (searchResults) => {
-              try {
-                if (searchResults && searchResults.RelatedTopics) {
-                  const topLinks = searchResults.RelatedTopics.slice(0, 5).map(
-                    (topic: any) => topic.FirstURL || null
-                  );
-
-                  const hyperlinkList = topLinks
-                    .filter((url: any) => url) 
-                    .map((url: any) => `<a href="${url}" target="_blank">${url}</a>`)
-                    .join('<br>');
-
-                  // Format hyperlinks dynamically
-                  const formattedLinks = this.formatMessage(`Top 5 Links:<br>${hyperlinkList}`);
-
-                  this.chatResponses.push({
-                    from: 'lmstudio',
-                    message: formattedLinks,
-                  });
-                } else {
-                  this.chatResponses.push({
-                    from: 'lmstudio',
-                    message: 'No search results found.',
-                  });
-                }
-              } catch (error) {
-                console.error('Error while extracting search results:', error);
-                this.chatResponses.push({
-                  from: 'lmstudio',
-                  message: 'Error while extracting search results.',
-                });
-              }
-            },
-            error: (err) => {
-              console.error('Error fetching web results:', err);
-              this.chatResponses.push({
-                from: 'lmstudio',
-                message: 'Error fetching web results.',
-              });
-            },
-          });
+          input = '';
         },
         error: (err) => {
           console.error('Error processing user input:', err);
@@ -108,21 +73,21 @@ export class SearchPageComponent {
             from: 'lmstudio',
             message: 'Error processing user input.',
           });
+          collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: 'Error processing user input.' });
         },
       });
-      localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
+
     }
   }
   
 
   processSearchResults(searchResults: any): string[] {
     if (searchResults && searchResults.RelatedTopics) {
-      // Map to an array of topic text, filtering out empty strings
       return searchResults.RelatedTopics.map(
         (topic: any) => topic.Text || ''
-      ).filter((text: string) => text.trim() !== ''); // Remove empty results
+      ).filter((text: string) => text.trim() !== '');
     }
-    return []; // Return an empty array if no results
+    return [];
   }
 }
 

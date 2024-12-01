@@ -3,7 +3,6 @@ import PocketBase from 'pocketbase';
 import { UserModel } from '../../interfaces/user-model';
 import { environment } from '../../../environments/environment.development';
 import { BehaviorSubject } from 'rxjs';
-import { isValidDate } from 'rxjs/internal/util/isDate';
 
 
 @Injectable({
@@ -20,7 +19,7 @@ export class AuthService {
     const pb = new PocketBase(environment.baseUrl);
     const authData = await pb.collection('users').authWithPassword(username, password);
 
-    this.userSubject.next( {isValid:pb.authStore.isValid, authModel: pb.authStore.model, token: pb.authStore.token} );
+    this.userSubject.next( {isValid:pb.authStore.isValid, authModel: pb.authStore.record, token: pb.authStore.token} );
 
     return pb.authStore.isValid;
   }
@@ -32,7 +31,12 @@ export class AuthService {
 
   public updateUserSubject(): void {
     const pb = new PocketBase(environment.baseUrl);
-    this.userSubject.next( {isValid:pb.authStore.isValid, authModel: pb.authStore.model, token: pb.authStore.token} );  
+    this.userSubject.next( {isValid:pb.authStore.isValid, authModel: pb.authStore.record, token: pb.authStore.token} );  
+  }
+
+  async getUserID(): Promise<any> {
+    const pb = new PocketBase(environment.baseUrl);
+    return await pb.authStore.record;
   }
 
   

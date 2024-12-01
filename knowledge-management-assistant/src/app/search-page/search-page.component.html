@@ -1,6 +1,6 @@
 <div class="search-container">
   <div class="chat-container">
-    <div *ngFor="let response of chatResponses">
+    <div *ngFor="let response of chatResponses" class="message-wrapper">
       <div
         class="chat-message"
         [ngClass]="{ 'user-message': response.from === 'user', 'system-message': response.from !== 'user' }"
@@ -18,5 +18,14 @@
       (keydown.enter)="getResponse()"
     />
     <button (click)="getResponse()">Send</button>
+  </div>
+
+  <div *ngIf="results && results.length">
+    <h2>Search Results for "{{ userInput }}"</h2>
+    <ul>
+      <li *ngFor="let result of results">
+        <a [href]="result" target="_blank">{{ result }}</a>
+      </li>
+    </ul>
   </div>
 </div>
