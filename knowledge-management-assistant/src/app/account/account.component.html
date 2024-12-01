@@ -1,0 +1,12 @@
+<div class="centered">
+  <div class="Accountclass" *ngIf="user">
+    <img [src]="userpfp" alt="User Profile Picture" class="w-48 h-48 rounded-full"/>
+  </div>
+  <div *ngIf="user" text-align="center">
+    <p>{{user.record.username}}</p>
+    <p>{{user.record.email}}</p>
+    <!-- <button (click)="logout()">Logout</button> -->
+  <div *ngIf="!user">
+    <p>Loading user information...</p>
+  </div>
+</div>
