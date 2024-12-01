@@ -36,11 +36,14 @@ export class SearchPageComponent {
     return message;
   }
   
-  ngOnInit() {
-    const savedHistory = localStorage.getItem('chatHistory');
-    if(savedHistory) {
-      this.chatResponses = JSON.parse(savedHistory);
-    }
+  addtohist(array: any) {
+    return [{ from: 'user', message: array["query"] }, { from: "lmstudio", message:array["llmresponse"] }];
+  }
+
+  async ngOnInit() {
+    const pb = new PocketBase(environment.baseUrl);
+    const pbhist = await pb.collection('queries').getFullList({ user: pb.authStore.record?.id });
+    this.chatResponses =  pbhist.map(this.addtohist).flat();
     
   }
   async getResponse() {
@@ -50,7 +53,12 @@ export class SearchPageComponent {
     
     if (this.userInput.trim()) {
       const input = this.userInput;
+      const collection = pb.collection('queries');
       this.chatResponses.push({ from: 'user', message: input });
+
+      const apiResults = await this.bingSearchService.searchBing(this.userInput);
+
+      this.results = apiResults.webPages?.value.map((item: any) => item.url) || [];
 
       this.lmstudioService.getResponse(input).subscribe({
         next: (response: { choices: { message: { content: string } }[] }) => {
@@ -58,7 +66,7 @@ export class SearchPageComponent {
           if (response?.choices?.length > 0 && response.choices[0].message?.content) {
             let aiResponse = this.formatMessage(response.choices[0].message.content); // Format message
             this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
-            localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
+            collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: 'No valid response received from the LLM.' });
           } else {
             this.chatResponses.push({
               from: 'lmstudio',
@@ -72,17 +80,9 @@ export class SearchPageComponent {
             from: 'lmstudio',
             message: 'Error processing user input.',
           });
+          collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: 'Error processing user input.' });
         },
       });
-
-      const apiResults = await this.bingSearchService.searchBing(this.userInput);
-
-      this.results = apiResults.webPages?.value.map((item: any) => item.url) || [];
-
-      localStorage.setItem('chatHistory', JSON.stringify(this.chatResponses));
-
-      let collection = pb.collection('queries');
-      const r = collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: this.chatResponses[this.chatResponses.length - 1].message });
 
     }
   }
