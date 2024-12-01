@@ -64,6 +64,7 @@ export class SearchPageComponent {
               from: 'lmstudio',
               message: 'No valid response received from the LLM.',
             });
+            collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: 'No valid response received from the LLM.' });
           }
           input = '';
         },
