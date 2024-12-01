@@ -58,7 +58,7 @@ export class SearchPageComponent {
           if (response?.choices?.length > 0 && response.choices[0].message?.content) {
             let aiResponse = this.formatMessage(response.choices[0].message.content);
             this.chatResponses.push({ from: 'lmstudio', message: aiResponse });
-            collection.create({ query: input, response: aiResponse, user: pb.authStore.record?.id, llmresponse: aiResponse });
+            collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: aiResponse });
           } else {
             this.chatResponses.push({
               from: 'lmstudio',
