@@ -3,7 +3,6 @@ import PocketBase from 'pocketbase';
 import { UserModel } from '../../interfaces/user-model';
 import { environment } from '../../../environments/environment.development';
 import { BehaviorSubject } from 'rxjs';
-import { isValidDate } from 'rxjs/internal/util/isDate';
 
 
 @Injectable({

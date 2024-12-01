@@ -15,7 +15,6 @@ export class BingsearchService {
   constructor(private httpclient: HttpClient) {  }
 
   async searchBing(query: string): Promise<any> {
-    const pb = new PocketBase(environment.baseUrl);
     const headers = new HttpHeaders({
       'Ocp-Apim-Subscription-Key': environment.azurekey
     });
