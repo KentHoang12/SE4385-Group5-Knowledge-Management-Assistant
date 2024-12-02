@@ -39,5 +39,12 @@ export class AuthService {
     return await pb.authStore.record;
   }
 
-  
+  async getUserObj(): Promise<any> {
+    const pb = new PocketBase(environment.baseUrl);
+    try {
+      return await pb.collection('users').authRefresh();
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  }
 }

@@ -3,7 +3,8 @@
      <a *ngIf= "isLoggedIn" routerLink="/search">search</a>
      <a *ngIf= "!isLoggedIn" routerLink="/">search</a>
      <div class="right-align">
-       <a routerLink="/account">account</a>
+        <a *ngIf= "isLoggedIn" routerLink="/account">account</a>
+        <a *ngIf= "!isLoggedIn" routerLink="/">account</a>
        <a routerLink="/logout">logout</a>
      </div>
    </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { LmstudioService } from '../shared/services/lmstudio.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +16,8 @@ import { environment } from '../../environments/environment.development';
   styleUrl: './search-page.component.css'
 })
 export class SearchPageComponent {
+  @ViewChild('chatContainer') chatContainer!: ElementRef;
+
   userInput = '';
   chatResponses: Array<{ from: string; message: string }> = [];
   results = [];
@@ -30,13 +32,13 @@ export class SearchPageComponent {
   }
   
   addtohist(array: any) {
-    return [{ from: 'user', message: array["query"] }, { from: "lmstudio", message:array["llmresponse"] }];
+    return [{ from: "lmstudio", message:array["llmresponse"] }, { from: 'user', message: array["query"] }];
   }
 
   async ngOnInit() {
     const pb = new PocketBase(environment.baseUrl);
-    const pbhist = await pb.collection('queries').getFullList({ user: pb.authStore.record?.id, sort: "created" });
-    this.chatResponses =  pbhist.map(this.addtohist).flat();
+    const pbhist = await pb.collection('queries').getFullList({ user: pb.authStore.record?.id });
+    this.chatResponses =  pbhist.map(this.addtohist).flat().reverse();
     
   }
   async getResponse() {
@@ -45,11 +47,15 @@ export class SearchPageComponent {
     if(!pb.authStore.isValid){return;}
     
     if (this.userInput.trim()) {
-      let input = this.userInput;
+      const input = this.userInput;
       const collection = pb.collection('queries');
       this.chatResponses.push({ from: 'user', message: input });
 
+      this.scrollToBottom();
+
       const apiResults = await this.bingSearchService.searchBing(this.userInput);
+      this.userInput = '';
+      this.scrollToBottom();
 
       this.results = apiResults.webPages?.value.map((item: any) => item.url) || [];
 
@@ -66,7 +72,6 @@ export class SearchPageComponent {
             });
             collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: 'No valid response received from the LLM.' });
           }
-          input = '';
         },
         error: (err) => {
           console.error('Error processing user input:', err);
@@ -77,11 +82,10 @@ export class SearchPageComponent {
           collection.create({ query: input, response: apiResults, user: pb.authStore.record?.id, llmresponse: 'Error processing user input.' });
         },
       });
-
+      this.scrollToBottom();
     }
   }
   
-
   processSearchResults(searchResults: any): string[] {
     if (searchResults && searchResults.RelatedTopics) {
       return searchResults.RelatedTopics.map(
@@ -89,6 +93,14 @@ export class SearchPageComponent {
       ).filter((text: string) => text.trim() !== '');
     }
     return [];
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      if (this.chatContainer) {
+        this.chatContainer.nativeElement.scrollToBottom = this.chatContainer.nativeElement.scrollHeight;
+      }
+    }, 0);
   }
 }
 
